@@ -23,9 +23,8 @@ Bun + Turbo monorepo with:
   - `packages/mcp` - MCP integration
   - `packages/desktop-mcp` - Desktop MCP server
   - `packages/local-db` - Local SQLite database
-  - `packages/durable-session` - Durable session management
   - `packages/email` - Email templates/sending
-  - `packages/scripts` - CLI tooling
+  - `packages/cli` - CLI tooling
 - **Tooling**:
   - `tooling/typescript` - Shared TypeScript configs
 
