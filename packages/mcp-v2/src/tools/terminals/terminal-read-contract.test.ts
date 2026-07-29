@@ -14,22 +14,42 @@ describe("terminal read contract", () => {
 				terminalId: "terminal-1",
 				cols: 120,
 				rows: 40,
-				text: "working\nAPI_KEY=do-not-leak\nAuthorization: Bearer abc.def",
+				revision: 42,
+				text: "working\nAPI_KEY=do-not-leak\nAuthorization: Bearer ***",
 			},
 			summary: {
 				terminalId: "terminal-1",
 				workspaceId: "workspace-1",
 				state: "waiting_input",
+				stateSource: "agent_hook",
 				agent: { runtime: "claude", presetId: "claude", label: "Claude" },
 				updatedAt: "2026-07-29T00:00:00.000Z",
 			},
 		});
 
 		expect(result.state).toBe("waiting_input");
+		expect(result.stateSource).toBe("agent_hook");
+		expect(result.revision).toBe(42);
 		expect(result.agent?.runtime).toBe("claude");
 		expect(result.output).toContain("working");
 		expect(result.output).not.toContain("do-not-leak");
 		expect(result.output).not.toContain("abc.def");
+	});
+
+	it("does not fabricate running state or freshness when enrichment is absent", () => {
+		const result = buildTerminalReadResult({
+			workspaceId: "workspace-1",
+			snapshot: {
+				terminalId: "terminal-1",
+				cols: 80,
+				rows: 24,
+				revision: 7,
+				text: "plain output",
+			},
+		});
+		expect(result.state).toBe("unknown");
+		expect(result.stateSource).toBe("unknown");
+		expect(result.updatedAt).toBeUndefined();
 	});
 
 	it("classifies only terminal.snapshot 404 as a capability mismatch", () => {

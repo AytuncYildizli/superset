@@ -20,12 +20,14 @@ import * as automationsUpdate from "./automations/update";
 import * as hostsList from "./hosts/list";
 import * as organizationMembersList from "./organization/members/list";
 import * as projectsList from "./projects/list";
+import * as targetsResolveSpoken from "./targets/resolve-spoken";
 import * as tasksCreate from "./tasks/create";
 import * as tasksDelete from "./tasks/delete";
 import * as tasksGet from "./tasks/get";
 import * as tasksList from "./tasks/list";
 import * as tasksStatusesList from "./tasks/statuses/list";
 import * as tasksUpdate from "./tasks/update";
+import * as terminalsAwaitDelivery from "./terminals/await-delivery";
 import * as terminalsClose from "./terminals/close";
 import * as terminalsCreate from "./terminals/create";
 import * as terminalsList from "./terminals/list";
@@ -44,6 +46,7 @@ const REGISTRARS = [
 	tasksDelete,
 	tasksStatusesList,
 	organizationMembersList,
+	targetsResolveSpoken,
 	automationsList,
 	automationsGet,
 	automationsGetPrompt,
@@ -64,6 +67,7 @@ const REGISTRARS = [
 	terminalsCreate,
 	terminalsList,
 	terminalsSend,
+	terminalsAwaitDelivery,
 	terminalsRead,
 	terminalsClose,
 	projectsList,

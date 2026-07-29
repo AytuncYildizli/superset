@@ -12,13 +12,15 @@ const base = {
 };
 
 describe("normalizeTerminalSummary", () => {
-	it("normalizes an old-host summary without inferring identity from title", () => {
-		expect(normalizeTerminalSummary(base)).toMatchObject({
+	it("normalizes an old-host summary without inferring identity or freshness", () => {
+		const normalized = normalizeTerminalSummary(base);
+		expect(normalized).toMatchObject({
 			agent: { runtime: "unknown" },
 			launchCommand: null,
-			state: "running",
-			updatedAt: new Date(100).toISOString(),
+			state: "unknown",
+			stateSource: "unknown",
 		});
+		expect(normalized.updatedAt).toBeUndefined();
 	});
 
 	it("preserves enriched metadata and redacts launch command", () => {

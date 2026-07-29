@@ -31,6 +31,10 @@ export interface ModeTracker {
 export interface TerminalSnapshot {
 	cols: number;
 	rows: number;
+	/** Monotonic total PTY-output bytes observed by this tracker. */
+	revision: number;
+	/** Wall-clock time of the most recent PTY-output chunk, if any. */
+	updatedAt?: number;
 	/** Plain text of the emulator buffer (alt-screen for TUI agents). */
 	text: string;
 }
@@ -50,6 +54,8 @@ type HeadlessInternals = {
 };
 
 export function createModeTracker(cols: number, rows: number): ModeTracker {
+	let revision = 0;
+	let updatedAt: number | undefined;
 	const term = new HeadlessTerminal({
 		cols,
 		rows,
@@ -139,12 +145,20 @@ export function createModeTracker(cols: number, rows: number): ModeTracker {
 		}
 		// Trim trailing blank rows so the snapshot ends at real content.
 		while (lines.length > 0 && lines[lines.length - 1] === "") lines.pop();
-		return { cols: term.cols, rows: term.rows, text: lines.join("\n") };
+		return {
+			cols: term.cols,
+			rows: term.rows,
+			revision,
+			...(updatedAt === undefined ? {} : { updatedAt }),
+			text: lines.join("\n"),
+		};
 	};
 
 	return {
 		feed(bytes) {
 			writeBuffer.writeSync(bytes);
+			revision += bytes.byteLength;
+			updatedAt = Date.now();
 		},
 		resize(nextCols, nextRows) {
 			if (term.cols === nextCols && term.rows === nextRows) return;

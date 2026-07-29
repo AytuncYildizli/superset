@@ -504,15 +504,59 @@ describe("terminal.send / terminal.snapshot tRPC procedures", () => {
 			workspaceId,
 			text: `echo rpc-${id} > "${sentinelFile}"`,
 		});
-		assert.deepEqual(sent, { terminalId, submitted: true });
+		assert.equal(sent.terminalId, terminalId);
+		assert.equal(sent.submitted, true);
+		assert.equal(sent.submitSent, true);
+		assert.equal(sent.phase, "injected");
+		assert.equal(sent.verified, false);
+		assert.ok(sent.deliveryId);
+		assert.ok(!sent.speak.toLocaleLowerCase("tr-TR").includes("gönder"));
 		await waitFor(() => fs.existsSync(sentinelFile), 5000);
 
 		await waitForSnapshotText(terminalId, `rpc-${id}`, 5000);
+		const awaited = await caller.terminal.awaitDelivery({
+			deliveryId: sent.deliveryId,
+			terminalId,
+			workspaceId,
+			timeoutMs: 250,
+		});
+		assert.equal(awaited.phase, "unknown_timeout");
+		assert.equal(awaited.verified, false);
 		const snap = await caller.terminal.snapshot({ terminalId, workspaceId });
 		assert.equal(snap.terminalId, terminalId);
 		assert.ok(snap.cols > 0 && snap.rows > 0);
 		assert.ok(snap.text.includes(`rpc-${id}`));
 
+		await disposeSessionAndWait(terminalId, db);
+	});
+
+	test("duplicate client token causes zero second PTY write", async () => {
+		const caller = await makeCaller();
+		const terminalId = `e2e-rpc-dedupe-${randomUUID().slice(0, 8)}`;
+		const sentinelFile = path.join(TEST_HOME, `rpc-dedupe-${terminalId}`);
+		const session = await createTerminalSessionInternal({
+			terminalId,
+			workspaceId,
+			db,
+			listed: true,
+		});
+		assert.ok(!("error" in session));
+		if ("error" in session) return;
+		const request = {
+			terminalId,
+			workspaceId,
+			text: `printf x >> "${sentinelFile}"`,
+			clientToken: `turn-${randomUUID()}`,
+		};
+		const first = await caller.terminal.send(request);
+		const retry = await caller.terminal.send(request);
+		assert.equal(first.phase, "injected");
+		assert.equal(retry.phase, "duplicate_ignored");
+		assert.equal(retry.submitSent, false);
+		assert.equal(retry.deliveryId, first.deliveryId);
+		await waitFor(() => fs.existsSync(sentinelFile), 5000);
+		await new Promise((resolve) => setTimeout(resolve, 250));
+		assert.equal(fs.readFileSync(sentinelFile, "utf8"), "x");
 		await disposeSessionAndWait(terminalId, db);
 	});
 
