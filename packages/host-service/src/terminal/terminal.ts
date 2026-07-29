@@ -637,10 +637,18 @@ export async function writeFramedInputToSession({
 		return { error: "Terminal session has exited" };
 	}
 
-	const framed = session.modeTracker.isBracketedPasteActive()
-		? `\x1b[200~${text}\x1b[201~`
-		: text;
-	session.pty.write(submit ? `${framed}\r` : framed);
+	const bracketedPasteActive = session.modeTracker.isBracketedPasteActive();
+	const framed = bracketedPasteActive ? `\x1b[200~${text}\x1b[201~` : text;
+	session.pty.write(framed);
+	if (submit) {
+		// TUI agents such as Claude Code can consume the trailing Enter before
+		// processing bracketed-paste-end when both arrive in one PTY write. Give
+		// the foreground parser one tick, then submit as a distinct input event.
+		if (bracketedPasteActive) {
+			await new Promise((resolve) => setTimeout(resolve, 25));
+		}
+		session.pty.write("\r");
+	}
 	return { success: true };
 }
 
