@@ -18,7 +18,8 @@ export interface TerminalOperatorSession extends TerminalSessionSummary {
 	agent: TerminalOperatorAgent;
 	launchCommand: string | null;
 	state: TerminalOperatorState;
-	updatedAt: string;
+	stateSource: "agent_hook" | "process_tree" | "unknown";
+	updatedAt?: string;
 }
 
 const WAITING_INPUT_EVENTS = new Set([
@@ -49,16 +50,31 @@ export function buildTerminalOperatorSession({
 	hasRunningProcess: boolean;
 }): TerminalOperatorSession {
 	let state: TerminalOperatorState;
+	let stateSource: TerminalOperatorSession["stateSource"];
 	if (summary.exited) {
 		state = "exited";
+		stateSource = "process_tree";
 	} else if (binding && WAITING_INPUT_EVENTS.has(binding.lastEventType)) {
 		state = "waiting_input";
+		stateSource = "agent_hook";
 	} else if (binding && IDLE_EVENTS.has(binding.lastEventType)) {
 		state = "idle";
+		stateSource = "agent_hook";
+	} else if (binding) {
+		state = "running";
+		stateSource = "agent_hook";
+	} else if (hasRunningProcess) {
+		state = "running";
+		stateSource = "process_tree";
 	} else {
-		state = hasRunningProcess || binding ? "running" : "idle";
+		state = "idle";
+		stateSource = "unknown";
 	}
 
+	const updatedAtMs = Math.max(
+		binding?.lastEventAt ?? 0,
+		summary.lastOutputAt ?? 0,
+	);
 	return {
 		...summary,
 		agent: {
@@ -68,8 +84,9 @@ export function buildTerminalOperatorSession({
 		},
 		launchCommand: binding?.launchCommand ?? null,
 		state,
-		updatedAt: new Date(
-			binding?.lastEventAt ?? summary.createdAt,
-		).toISOString(),
+		stateSource,
+		...(updatedAtMs === 0
+			? {}
+			: { updatedAt: new Date(updatedAtMs).toISOString() }),
 	};
 }

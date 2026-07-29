@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { defineTool } from "../../define-tool";
@@ -6,31 +7,52 @@ import { hostServiceCall } from "../../host-service-client";
 export function register(server: McpServer): void {
 	defineTool(server, {
 		name: "terminals_send",
-		annotations: { destructiveHint: false },
-		description:
-			"Send text to a terminal ALREADY running in a workspace — e.g. a follow-up prompt to a claude/codex agent — instead of spawning a new session. Targets the terminal by id (the value agents_create returned as `sessionId`, or terminals_create returned as `terminalId`). Use agents_create only to START an agent; use this for every message after. Multi-line text is delivered as a single paste, not separate submits. IMPORTANT: `submitted: true` confirms PTY input injection only; it does not prove the agent processed the prompt. After submit, poll terminals_read and terminals_list for visible output/state change before claiming the message was received or work started.",
+		description: `Send a follow-up message into an existing terminal session using an evidence-bearing delivery receipt.
+
+Call terminals_list first and bind the user's spoken request to one canonical hostId/workspaceId/terminalId. The host fails closed when a known agent prompt already contains text, suppresses duplicate retries, and uses an optimistic terminal revision guard.
+
+The result's phase is authoritative:
+- rejected_prompt_not_empty / rejected_revision_changed / duplicate_*: zero PTY writes occurred;
+- injected: PTY input was written, but there is NO proof the agent processed it;
+- working/completed/needs_input are only produced by terminals_await_delivery from host lifecycle evidence.
+
+The legacy submitted field is deprecated. It means only that an Enter key was physically written; it NEVER means the agent processed or completed the instruction. After an injected receipt, call terminals_await_delivery with the returned deliveryId. Never say "sent", "delivered", "done", "gönderdim", "ilettim", or equivalent success language from submitted/injected alone. Reuse clientToken for transport retries. Set allowRepeat=true for an intentional repeated short answer such as "y", "1", or "devam".`,
 		inputSchema: {
-			hostId: z
-				.string()
-				.min(1)
-				.describe("Host machineId the workspace lives on."),
-			workspaceId: z
-				.string()
-				.uuid()
-				.describe("Workspace UUID the terminal runs in."),
-			terminalId: z
-				.string()
-				.describe(
-					"Terminal id (the `sessionId` agents_create returned, or `terminalId` from terminals_create).",
-				),
-			text: z.string().min(1).describe("Text to write into the terminal."),
+			hostId: z.string().describe("Host running the target terminal"),
+			workspaceId: z.string().describe("Workspace that owns the terminal"),
+			terminalId: z.string().describe("Existing terminal session id"),
+			text: z.string().min(1).describe("Follow-up message to send"),
 			submit: z
 				.boolean()
+				.default(true)
+				.describe("Whether to press Enter after writing the message"),
+			clientToken: z
+				.string()
+				.min(1)
+				.max(200)
 				.optional()
-				.describe("Press Enter after the text. Default true."),
+				.describe(
+					"Stable idempotency token for retries of the same voice turn",
+				),
+			requireEmptyPrompt: z
+				.boolean()
+				.default(true)
+				.describe(
+					"Fail closed when a supported agent TUI already has staged prompt text",
+				),
+			allowRepeat: z
+				.boolean()
+				.default(false)
+				.describe("Explicitly allow the same content inside the dedupe window"),
+			expectRevision: z
+				.number()
+				.int()
+				.nonnegative()
+				.optional()
+				.describe("Optional terminal revision from terminals_read"),
 		},
-		handler: async (input, ctx) => {
-			return hostServiceCall<{ terminalId: string; submitted: boolean }>(
+		handler: async (input, ctx) =>
+			hostServiceCall(
 				{
 					relayUrl: ctx.relayUrl,
 					organizationId: ctx.organizationId,
@@ -43,9 +65,14 @@ export function register(server: McpServer): void {
 					terminalId: input.terminalId,
 					workspaceId: input.workspaceId,
 					text: input.text,
-					submit: input.submit ?? true,
+					submit: input.submit,
+					clientToken: input.clientToken ?? randomUUID(),
+					requireEmptyPrompt: input.requireEmptyPrompt,
+					allowRepeat: input.allowRepeat,
+					...(input.expectRevision === undefined
+						? {}
+						: { expectRevision: input.expectRevision }),
 				},
-			);
-		},
+			),
 	});
 }

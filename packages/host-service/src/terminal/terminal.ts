@@ -409,6 +409,8 @@ export interface TerminalSessionSummary {
 	exitCode: number;
 	attached: boolean;
 	title: string | null;
+	revision?: number;
+	lastOutputAt?: number;
 }
 
 export function listTerminalSessions(
@@ -424,15 +426,22 @@ export function listTerminalSessions(
 				session.workspaceId === options.workspaceId,
 		)
 		.filter((session) => includeExited || !session.exited)
-		.map((session) => ({
-			terminalId: session.terminalId,
-			workspaceId: session.workspaceId,
-			createdAt: session.createdAt,
-			exited: session.exited,
-			exitCode: session.exitCode,
-			attached: pruneAndCountOpenSockets(session) > 0,
-			title: session.title,
-		}));
+		.map((session) => {
+			const snapshot = session.modeTracker.snapshot(1);
+			return {
+				terminalId: session.terminalId,
+				workspaceId: session.workspaceId,
+				createdAt: session.createdAt,
+				exited: session.exited,
+				exitCode: session.exitCode,
+				attached: pruneAndCountOpenSockets(session) > 0,
+				title: session.title,
+				revision: snapshot.revision,
+				...(snapshot.updatedAt === undefined
+					? {}
+					: { lastOutputAt: snapshot.updatedAt }),
+			};
+		});
 }
 
 /**
@@ -603,6 +612,7 @@ export async function writeFramedInputToSession({
 	workspaceId,
 	text,
 	submit,
+	expectRevision,
 	db,
 	eventBus,
 }: {
@@ -610,9 +620,18 @@ export async function writeFramedInputToSession({
 	workspaceId: string;
 	text: string;
 	submit: boolean;
+	expectRevision?: number;
 	db: HostDb;
 	eventBus?: EventBus;
-}): Promise<{ success: true } | { error: string }> {
+}): Promise<
+	| {
+			success: true;
+			revisionBefore: number;
+			revisionAfter: number;
+			submitSent: boolean;
+	  }
+	| { error: string }
+> {
 	const session = await getOrAdoptSession({
 		terminalId,
 		workspaceId,
@@ -622,6 +641,13 @@ export async function writeFramedInputToSession({
 	if ("error" in session) return session;
 	if (session.exited) {
 		return { error: "Terminal session has exited" };
+	}
+
+	const revisionBefore = session.modeTracker.snapshot(1).revision;
+	if (expectRevision !== undefined && revisionBefore !== expectRevision) {
+		return {
+			error: `Terminal revision changed (expected ${expectRevision}, got ${revisionBefore})`,
+		};
 	}
 
 	const bracketedPasteActive = session.modeTracker.isBracketedPasteActive();
@@ -636,7 +662,12 @@ export async function writeFramedInputToSession({
 		}
 		session.pty.write("\r");
 	}
-	return { success: true };
+	return {
+		success: true,
+		revisionBefore,
+		revisionAfter: session.modeTracker.snapshot(1).revision,
+		submitSent: submit,
+	};
 }
 
 /**
