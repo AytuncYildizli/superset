@@ -9,6 +9,9 @@ interface RecordEventInput {
 	agentId?: TerminalAgentId;
 	agentSessionId?: string;
 	definitionId?: AgentDefinitionId;
+	presetId?: string;
+	label?: string;
+	launchCommand?: string;
 	occurredAt: number;
 }
 
@@ -69,6 +72,9 @@ export class TerminalAgentStore extends EventEmitter {
 			agentId,
 			agentSessionId,
 			definitionId,
+			presetId,
+			label,
+			launchCommand,
 			occurredAt,
 		} = input;
 
@@ -102,6 +108,9 @@ export class TerminalAgentStore extends EventEmitter {
 			agentId: nextAgentId,
 			agentSessionId: agentSessionId ?? prior?.agentSessionId,
 			definitionId: definitionId ?? prior?.definitionId,
+			presetId: presetId ?? prior?.presetId,
+			label: label ?? prior?.label,
+			launchCommand: launchCommand ?? prior?.launchCommand,
 			startedAt:
 				prior !== undefined && !sessionChanged ? prior.startedAt : occurredAt,
 			lastEventAt: occurredAt,

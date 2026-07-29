@@ -121,6 +121,14 @@ export interface TerminalSummary {
 	exitCode: number;
 	attached: boolean;
 	title: string | null;
+	agent?: {
+		runtime: "codex" | "claude" | "kimi" | "shell" | "unknown";
+		presetId?: string;
+		label?: string;
+	};
+	launchCommand?: string | null;
+	state?: "running" | "idle" | "waiting_input" | "exited";
+	updatedAt?: string;
 }
 
 export interface TerminalListResult {

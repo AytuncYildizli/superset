@@ -14,6 +14,9 @@ const bindingColumns = {
 	agentId: terminalAgentBindings.agentId,
 	agentSessionId: terminalAgentBindings.agentSessionId,
 	definitionId: terminalAgentBindings.definitionId,
+	presetId: terminalAgentBindings.presetId,
+	label: terminalAgentBindings.label,
+	launchCommand: terminalAgentBindings.launchCommand,
 	startedAt: terminalAgentBindings.startedAt,
 	lastEventAt: terminalAgentBindings.lastEventAt,
 	lastEventType: terminalAgentBindings.lastEventType,
@@ -25,6 +28,9 @@ interface BindingRow {
 	agentId: TerminalAgentId;
 	agentSessionId: string | null;
 	definitionId: AgentDefinitionId | null;
+	presetId: string | null;
+	label: string | null;
+	launchCommand: string | null;
 	startedAt: number;
 	lastEventAt: number;
 	lastEventType: string;
@@ -37,6 +43,9 @@ function rowToBinding(row: BindingRow): TerminalAgentBinding {
 		agentId: row.agentId,
 		...(row.agentSessionId ? { agentSessionId: row.agentSessionId } : {}),
 		...(row.definitionId ? { definitionId: row.definitionId } : {}),
+		...(row.presetId ? { presetId: row.presetId } : {}),
+		...(row.label ? { label: row.label } : {}),
+		...(row.launchCommand ? { launchCommand: row.launchCommand } : {}),
 		startedAt: row.startedAt,
 		lastEventAt: row.lastEventAt,
 		lastEventType: row.lastEventType,
@@ -192,6 +201,9 @@ export class SqliteTerminalAgentBindingPersistence
 				agentId: binding.agentId,
 				agentSessionId: binding.agentSessionId ?? null,
 				definitionId: binding.definitionId ?? null,
+				presetId: binding.presetId ?? null,
+				label: binding.label ?? null,
+				launchCommand: binding.launchCommand ?? null,
 				startedAt: binding.startedAt,
 				lastEventAt: binding.lastEventAt,
 				lastEventType: binding.lastEventType,
@@ -203,6 +215,9 @@ export class SqliteTerminalAgentBindingPersistence
 					agentId: binding.agentId,
 					agentSessionId: binding.agentSessionId ?? null,
 					definitionId: binding.definitionId ?? null,
+					presetId: binding.presetId ?? null,
+					label: binding.label ?? null,
+					launchCommand: binding.launchCommand ?? null,
 					startedAt: binding.startedAt,
 					lastEventAt: binding.lastEventAt,
 					lastEventType: binding.lastEventType,

@@ -2,23 +2,17 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { defineTool } from "../../define-tool";
 import { hostServiceCall } from "../../host-service-client";
-
-interface TerminalSummary {
-	terminalId: string;
-	workspaceId: string;
-	createdAt: number;
-	exited: boolean;
-	exitCode: number;
-	attached: boolean;
-	title: string | null;
-}
+import {
+	type HostTerminalSummary,
+	normalizeTerminalSummary,
+} from "./terminal-list-contract";
 
 export function register(server: McpServer): void {
 	defineTool(server, {
 		name: "terminals_list",
 		annotations: { readOnlyHint: true },
 		description:
-			"List the live terminal sessions in a workspace (ids, titles, attach state). Use to discover a terminalId to terminals_send/terminals_read/terminals_close against when you didn't keep the one agents_create returned. Use hosts_list / workspaces_list to find the hostId.",
+			"List live terminal sessions with stable runtime/preset identity, sanitized launch command, state, and last activity. Identity is captured at launch and is never inferred from a human-written title. Use to select a terminalId before terminals_send/terminals_read/terminals_close.",
 		inputSchema: {
 			hostId: z
 				.string()
@@ -30,7 +24,7 @@ export function register(server: McpServer): void {
 				.describe("Workspace UUID whose terminals to list."),
 		},
 		handler: async (input, ctx) => {
-			return hostServiceCall<{ sessions: TerminalSummary[] }>(
+			const result = await hostServiceCall<{ sessions: HostTerminalSummary[] }>(
 				{
 					relayUrl: ctx.relayUrl,
 					organizationId: ctx.organizationId,
@@ -41,6 +35,9 @@ export function register(server: McpServer): void {
 				"query",
 				{ workspaceId: input.workspaceId },
 			);
+			return {
+				sessions: result.sessions.map(normalizeTerminalSummary),
+			};
 		},
 	});
 }

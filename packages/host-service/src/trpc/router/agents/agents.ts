@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { isBuiltinAgentId } from "@superset/shared/agent-catalog";
 import {
 	buildAgentEffortArgs,
 	buildAgentModelArgs,
@@ -11,6 +12,7 @@ import {
 	envOverlayPrefix,
 	sanitizePromptForPty,
 } from "@superset/shared/agent-prompt-launch";
+import { redactSensitiveText } from "@superset/shared/sensitive-text";
 import { TRPCError } from "@trpc/server";
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
@@ -142,6 +144,36 @@ export function buildAgentCommandString(
 		prompt,
 		randomId,
 	});
+}
+
+export function buildTerminalAgentLaunchMetadata(
+	config: Pick<
+		ResolvedHostAgentConfig,
+		"presetId" | "label" | "command" | "args"
+	>,
+	extraArgs: string[] = [],
+): {
+	agentId: Exclude<ReturnType<typeof resolveBuiltinAgentId>, null>;
+	definitionId: Exclude<ReturnType<typeof resolveBuiltinAgentId>, null>;
+	presetId: string;
+	label: string;
+	launchCommand: string;
+} | null {
+	const agentId = resolveBuiltinAgentId(config.presetId);
+	if (!agentId) return null;
+	return {
+		agentId,
+		definitionId: agentId,
+		presetId: config.presetId,
+		label: config.label,
+		launchCommand: redactSensitiveText(
+			buildArgvCommand([config.command, ...config.args, ...extraArgs]),
+		),
+	};
+}
+
+function resolveBuiltinAgentId(id: string) {
+	return isBuiltinAgentId(id) ? id : null;
 }
 
 function buildAttachmentBlock(
@@ -292,7 +324,11 @@ async function runChatAgent(
 export function buildTerminalAgentLaunch(
 	db: HostDb,
 	input: AgentRunInput,
-): { fullCommand: string; label: string } {
+): {
+	fullCommand: string;
+	label: string;
+	launchMetadata: ReturnType<typeof buildTerminalAgentLaunchMetadata>;
+} {
 	const config = resolveHostAgentConfig(db, input.agent);
 	if (!config) {
 		// Worded for end users (automation run errors show this verbatim), but
@@ -325,17 +361,25 @@ export function buildTerminalAgentLaunch(
 		...effortArgs,
 	]);
 	const modelEnv = buildAgentModelEnv(config.presetId, input.model);
+	const launchMetadata = buildTerminalAgentLaunchMetadata(config, [
+		...modelArgs,
+		...effortArgs,
+	]);
 	return {
 		fullCommand: `${envOverlayPrefix({ ...config.env, ...modelEnv })}${command}`,
 		label: config.label,
+		launchMetadata,
 	};
 }
 
 async function runTerminalAgent(
-	ctx: { db: HostDb; eventBus: import("../../../events").EventBus },
+	ctx: HostServiceContext,
 	input: AgentRunInput,
 ): Promise<AgentRunResult> {
-	const { fullCommand, label } = buildTerminalAgentLaunch(ctx.db, input);
+	const { fullCommand, label, launchMetadata } = buildTerminalAgentLaunch(
+		ctx.db,
+		input,
+	);
 
 	const terminalId = crypto.randomUUID();
 	const result = await createTerminalSessionInternal({
@@ -350,6 +394,16 @@ async function runTerminalAgent(
 		throw new TRPCError({
 			code: "INTERNAL_SERVER_ERROR",
 			message: result.error,
+		});
+	}
+
+	if (launchMetadata) {
+		ctx.terminalAgentStore.recordEvent({
+			terminalId: result.terminalId,
+			workspaceId: input.workspaceId,
+			eventType: "Launch",
+			...launchMetadata,
+			occurredAt: Date.now(),
 		});
 	}
 

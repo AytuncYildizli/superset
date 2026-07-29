@@ -42,6 +42,9 @@ function seedSession(
 			terminalId: id,
 			workspaceId: workspaceId ?? "ws-1",
 			agentId: "claude",
+			presetId: "claude",
+			label: "Claude",
+			launchCommand: "'claude'",
 			startedAt: 1,
 			lastEventAt,
 			lastEventType: "Start",
@@ -66,6 +69,11 @@ describe("SqliteTerminalAgentBindingPersistence live reads", () => {
 		const persistence = new SqliteTerminalAgentBindingPersistence(db);
 		const live = persistence.listLiveByWorkspace("ws-1");
 		expect(live.map((binding) => binding.terminalId)).toEqual(["t-live"]);
+		expect(live[0]).toMatchObject({
+			presetId: "claude",
+			label: "Claude",
+			launchCommand: "'claude'",
+		});
 
 		expect(persistence.findLiveActive("ws-1", "claude")?.terminalId).toBe(
 			"t-live",

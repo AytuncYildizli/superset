@@ -9,6 +9,7 @@ import * as schema from "../../../db/schema";
 import {
 	buildAgentCommandString,
 	buildTerminalAgentLaunch,
+	buildTerminalAgentLaunchMetadata,
 	isChatAgent,
 	validateAgentEffortSelection,
 } from "./agents";
@@ -200,5 +201,34 @@ describe("validateAgentEffortSelection", () => {
 				"Superset does not support a reasoning effort override. Omit effort to use the agent default.",
 			);
 		}
+	});
+});
+
+describe("buildTerminalAgentLaunchMetadata", () => {
+	it("captures preset/label and a prompt-free sanitized command", () => {
+		const metadata = buildTerminalAgentLaunchMetadata(
+			{
+				...argvConfig,
+				args: ["--api-key", "do-not-leak"],
+			},
+			["--model", "sonnet"],
+		);
+		expect(metadata).toMatchObject({
+			agentId: "claude",
+			definitionId: "claude",
+			presetId: "claude",
+			label: "Claude",
+		});
+		expect(metadata?.launchCommand).toContain("--model");
+		expect(metadata?.launchCommand).not.toContain("do-not-leak");
+	});
+
+	it("does not invent identity for a custom preset", () => {
+		expect(
+			buildTerminalAgentLaunchMetadata({
+				...argvConfig,
+				presetId: "custom:my-agent",
+			}),
+		).toBeNull();
 	});
 });
