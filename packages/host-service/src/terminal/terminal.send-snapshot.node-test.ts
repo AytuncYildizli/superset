@@ -244,6 +244,12 @@ describe("writeFramedInputToSession / snapshotSession", () => {
 		if ("error" in session) return;
 
 		await waitFor(() => session.modeTracker.isBracketedPasteActive(), 5000);
+		const writes: string[] = [];
+		const originalWrite = session.pty.write.bind(session.pty);
+		session.pty.write = (data: string) => {
+			writes.push(data);
+			originalWrite(data);
+		};
 
 		const sent = await writeFramedInputToSession({
 			terminalId,
@@ -254,7 +260,7 @@ describe("writeFramedInputToSession / snapshotSession", () => {
 		});
 		assert.ok(!("error" in sent));
 
-		// EOF for cat: the framed write ended in Enter, so input is at line
+		// EOF for cat: the separate submit write ended in Enter, so input is at line
 		// start and a single ^D terminates it. Sent byte-exact — the framed
 		// path would paste-wrap the control char (send has text semantics).
 		const eof = writeInputToSession({
@@ -270,6 +276,10 @@ describe("writeFramedInputToSession / snapshotSession", () => {
 			captured.includes(`\x1b[200~line1-${id}\nline2-${id}\x1b[201~`),
 			`expected paste-framed payload, got: ${JSON.stringify(captured)}`,
 		);
+		assert.deepEqual(writes.slice(0, 2), [
+			`\x1b[200~line1-${id}\nline2-${id}\x1b[201~`,
+			"\r",
+		]);
 
 		// After `cat` exits, `printf '\\033[?2004l'` turned paste mode off
 		// again; the same send must now go through unframed.

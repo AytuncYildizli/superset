@@ -8,7 +8,7 @@ export function register(server: McpServer): void {
 		name: "terminals_send",
 		annotations: { destructiveHint: false },
 		description:
-			"Send text to a terminal ALREADY running in a workspace — e.g. a follow-up prompt to a claude/codex agent — instead of spawning a new session. Targets the terminal by id (the value agents_create returned as `sessionId`, or terminals_create returned as `terminalId`). Use agents_create only to START an agent; use this for every message after. Multi-line text is delivered as a single paste, not separate submits.",
+			"Send text to a terminal ALREADY running in a workspace — e.g. a follow-up prompt to a claude/codex agent — instead of spawning a new session. Targets the terminal by id (the value agents_create returned as `sessionId`, or terminals_create returned as `terminalId`). Use agents_create only to START an agent; use this for every message after. Multi-line text is delivered as a single paste, not separate submits. IMPORTANT: `submitted: true` confirms PTY input injection only; it does not prove the agent processed the prompt. After submit, poll terminals_read and terminals_list for visible output/state change before claiming the message was received or work started.",
 		inputSchema: {
 			hostId: z
 				.string()
