@@ -16,6 +16,9 @@ export interface TerminalAgentBinding {
 	agentId: TerminalAgentId;
 	agentSessionId?: string;
 	definitionId?: AgentDefinitionId;
+	presetId?: string;
+	label?: string;
+	launchCommand?: string;
 	startedAt: number;
 	lastEventAt: number;
 	lastEventType: string;

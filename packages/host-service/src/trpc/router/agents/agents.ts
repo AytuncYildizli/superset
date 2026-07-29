@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { isBuiltinAgentId } from "@superset/shared/agent-catalog";
 import {
 	buildAgentEffortArgs,
 	buildAgentModelArgs,
@@ -11,6 +12,7 @@ import {
 	envOverlayPrefix,
 	sanitizePromptForPty,
 } from "@superset/shared/agent-prompt-launch";
+import { redactSensitiveText } from "@superset/shared/sensitive-text";
 import { TRPCError } from "@trpc/server";
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
@@ -142,6 +144,36 @@ export function buildAgentCommandString(
 		prompt,
 		randomId,
 	});
+}
+
+export function buildTerminalAgentLaunchMetadata(
+	config: Pick<
+		ResolvedHostAgentConfig,
+		"presetId" | "label" | "command" | "args"
+	>,
+	extraArgs: string[] = [],
+): {
+	agentId: Exclude<ReturnType<typeof resolveBuiltinAgentId>, null>;
+	definitionId: Exclude<ReturnType<typeof resolveBuiltinAgentId>, null>;
+	presetId: string;
+	label: string;
+	launchCommand: string;
+} | null {
+	const agentId = resolveBuiltinAgentId(config.presetId);
+	if (!agentId) return null;
+	return {
+		agentId,
+		definitionId: agentId,
+		presetId: config.presetId,
+		label: config.label,
+		launchCommand: redactSensitiveText(
+			buildArgvCommand([config.command, ...config.args, ...extraArgs]),
+		),
+	};
+}
+
+function resolveBuiltinAgentId(id: string) {
+	return isBuiltinAgentId(id) ? id : null;
 }
 
 function buildAttachmentBlock(
@@ -284,7 +316,7 @@ async function runChatAgent(
 }
 
 async function runTerminalAgent(
-	ctx: { db: HostDb; eventBus: import("../../../events").EventBus },
+	ctx: HostServiceContext,
 	input: AgentRunInput,
 ): Promise<AgentRunResult> {
 	const config = resolveHostAgentConfig(ctx.db, input.agent);
@@ -334,6 +366,20 @@ async function runTerminalAgent(
 		throw new TRPCError({
 			code: "INTERNAL_SERVER_ERROR",
 			message: result.error,
+		});
+	}
+
+	const launchMetadata = buildTerminalAgentLaunchMetadata(config, [
+		...modelArgs,
+		...effortArgs,
+	]);
+	if (launchMetadata) {
+		ctx.terminalAgentStore.recordEvent({
+			terminalId: result.terminalId,
+			workspaceId: input.workspaceId,
+			eventType: "Launch",
+			...launchMetadata,
+			occurredAt: Date.now(),
 		});
 	}
 

@@ -15,6 +15,7 @@ import {
 	writeFramedInputToSession,
 	writeInputToSession,
 } from "../../../terminal/terminal";
+import { buildTerminalOperatorSession } from "../../../terminal-agents/operator-view";
 import type { HostServiceContext } from "../../../types";
 import { protectedProcedure, router } from "../../index";
 
@@ -140,9 +141,29 @@ export const terminalRouter = router({
 				workspaceId: z.string(),
 			}),
 		)
-		.query(async ({ ctx, input }) => ({
-			sessions: await listWorkspaceTerminalSessions(ctx.db, input.workspaceId),
-		})),
+		.query(async ({ ctx, input }) => {
+			const summaries = await listWorkspaceTerminalSessions(
+				ctx.db,
+				input.workspaceId,
+			);
+			const bindings = new Map(
+				ctx.terminalAgentStore
+					.listByWorkspace(input.workspaceId)
+					.map((binding) => [binding.terminalId, binding]),
+			);
+			return {
+				sessions: summaries.map((summary) =>
+					buildTerminalOperatorSession({
+						summary,
+						binding: bindings.get(summary.terminalId),
+						hasRunningProcess: sessionHasRunningProcess(
+							summary.terminalId,
+							input.workspaceId,
+						),
+					}),
+				),
+			};
+		}),
 
 	countBackgroundSessions: protectedProcedure
 		.input(

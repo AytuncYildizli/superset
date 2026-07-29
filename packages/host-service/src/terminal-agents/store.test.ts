@@ -281,6 +281,46 @@ describe("TerminalAgentStore", () => {
 		expect(store.listByWorkspace("other")).toHaveLength(0);
 	});
 
+	it("preserves launch metadata across later hooks and clears it on agent swap", () => {
+		store.recordEvent({
+			terminalId: "t1",
+			workspaceId: WORKSPACE,
+			eventType: "Launch",
+			agentId: "claude",
+			definitionId: "claude",
+			presetId: "claude",
+			label: "Claude",
+			launchCommand: "'claude' '--model' 'sonnet'",
+			occurredAt: 100,
+		});
+		store.recordEvent({
+			terminalId: "t1",
+			workspaceId: WORKSPACE,
+			eventType: "Start",
+			agentId: "claude",
+			agentSessionId: "session-1",
+			occurredAt: 200,
+		});
+
+		expect(store.get("t1")).toMatchObject({
+			presetId: "claude",
+			label: "Claude",
+			launchCommand: "'claude' '--model' 'sonnet'",
+			agentSessionId: "session-1",
+		});
+
+		store.recordEvent({
+			terminalId: "t1",
+			workspaceId: WORKSPACE,
+			eventType: "Attached",
+			agentId: "codex",
+			occurredAt: 300,
+		});
+		expect(store.get("t1")?.presetId).toBeUndefined();
+		expect(store.get("t1")?.label).toBeUndefined();
+		expect(store.get("t1")?.launchCommand).toBeUndefined();
+	});
+
 	it("ignores events with no agentId when no binding exists", () => {
 		store.recordEvent({
 			terminalId: "t1",

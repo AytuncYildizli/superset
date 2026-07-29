@@ -8,6 +8,34 @@ export interface HostServiceCallOptions {
 	jwt: string;
 }
 
+export class HostServiceError extends Error {
+	readonly hostId: string;
+	readonly procedure: string;
+	readonly status: number;
+	readonly responseBody: string;
+
+	constructor({
+		hostId,
+		procedure,
+		status,
+		responseBody,
+	}: {
+		hostId: string;
+		procedure: string;
+		status: number;
+		responseBody: string;
+	}) {
+		super(
+			`Host ${hostId} returned ${status} for ${procedure}: ${responseBody.slice(0, 200)}`,
+		);
+		this.name = "HostServiceError";
+		this.hostId = hostId;
+		this.procedure = procedure;
+		this.status = status;
+		this.responseBody = responseBody;
+	}
+}
+
 export async function hostServiceCall<TOutput>(
 	options: HostServiceCallOptions,
 	procedure: string,
@@ -44,9 +72,12 @@ export async function hostServiceCall<TOutput>(
 	});
 	const rawBody = await response.text();
 	if (!response.ok) {
-		throw new Error(
-			`Host ${options.hostId} returned ${response.status} for ${procedure}: ${rawBody.slice(0, 200)}`,
-		);
+		throw new HostServiceError({
+			hostId: options.hostId,
+			procedure,
+			status: response.status,
+			responseBody: rawBody,
+		});
 	}
 
 	type TrpcEnvelope = { result?: { data?: unknown } };
