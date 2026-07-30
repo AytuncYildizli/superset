@@ -1,0 +1,403 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1503856527453F324D19D652 /* VoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5C33632783828295D3EFC5 /* VoiceView.swift */; };
+		28084234CC008196215C179D /* ReceiptLedgerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EF16374E1EAA684AE06BAB /* ReceiptLedgerTests.swift */; };
+		4141470CCA448D03ADCECF65 /* VoiceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636F0374924A102A2877220A /* VoiceModels.swift */; };
+		E1D21A1E2C0AA4500BFE8983 /* WatchAudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A938FAF82BFC125D3E83D893 /* WatchAudioRecorder.swift */; };
+		EBD43BB3875C2684E37E7AC1 /* SupersetWatchVoiceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBD04BAB8F7765D469AB03 /* SupersetWatchVoiceApp.swift */; };
+		F16FA3E269E0F570A5F7C965 /* VoiceSessionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC56D93EAB558E5BF60DCA1F /* VoiceSessionModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E0AE0484BB309C5B516E4406 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 12F0EA4170DEAAA654B98F69 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2D716FD8FFB014FCE7B2AD33;
+			remoteInfo = SupersetWatchVoice;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		636F0374924A102A2877220A /* VoiceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceModels.swift; sourceTree = "<group>"; };
+		A599F8581330608DA29BDEAA /* SupersetWatchVoiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SupersetWatchVoiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5BFCC44502B662052411B04 /* SupersetWatchVoice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SupersetWatchVoice.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A938FAF82BFC125D3E83D893 /* WatchAudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAudioRecorder.swift; sourceTree = "<group>"; };
+		CD5C33632783828295D3EFC5 /* VoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceView.swift; sourceTree = "<group>"; };
+		D1EF16374E1EAA684AE06BAB /* ReceiptLedgerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptLedgerTests.swift; sourceTree = "<group>"; };
+		DBBBD04BAB8F7765D469AB03 /* SupersetWatchVoiceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupersetWatchVoiceApp.swift; sourceTree = "<group>"; };
+		EC56D93EAB558E5BF60DCA1F /* VoiceSessionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceSessionModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0315C749BC20AE2AEB5ABC2D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A5BFCC44502B662052411B04 /* SupersetWatchVoice.app */,
+				A599F8581330608DA29BDEAA /* SupersetWatchVoiceTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		15CA1FE7D6306D0690E01E39 /* SupersetWatchVoice */ = {
+			isa = PBXGroup;
+			children = (
+				DBBBD04BAB8F7765D469AB03 /* SupersetWatchVoiceApp.swift */,
+				636F0374924A102A2877220A /* VoiceModels.swift */,
+				EC56D93EAB558E5BF60DCA1F /* VoiceSessionModel.swift */,
+				CD5C33632783828295D3EFC5 /* VoiceView.swift */,
+				A938FAF82BFC125D3E83D893 /* WatchAudioRecorder.swift */,
+			);
+			path = SupersetWatchVoice;
+			sourceTree = "<group>";
+		};
+		9CD2301873F0F05ABC43E606 /* SupersetWatchVoiceTests */ = {
+			isa = PBXGroup;
+			children = (
+				D1EF16374E1EAA684AE06BAB /* ReceiptLedgerTests.swift */,
+			);
+			path = SupersetWatchVoiceTests;
+			sourceTree = "<group>";
+		};
+		F593F73E7B1619BA2B6E3ACA = {
+			isa = PBXGroup;
+			children = (
+				15CA1FE7D6306D0690E01E39 /* SupersetWatchVoice */,
+				9CD2301873F0F05ABC43E606 /* SupersetWatchVoiceTests */,
+				0315C749BC20AE2AEB5ABC2D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2D716FD8FFB014FCE7B2AD33 /* SupersetWatchVoice */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3658037CAB4D1637EDD65DCF /* Build configuration list for PBXNativeTarget "SupersetWatchVoice" */;
+			buildPhases = (
+				59107C18D08EA5150772A9EF /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SupersetWatchVoice;
+			packageProductDependencies = (
+			);
+			productName = SupersetWatchVoice;
+			productReference = A5BFCC44502B662052411B04 /* SupersetWatchVoice.app */;
+			productType = "com.apple.product-type.application";
+		};
+		52D50D7FBDEA52F424461E10 /* SupersetWatchVoiceTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 15A6A5C7F00100E61443852E /* Build configuration list for PBXNativeTarget "SupersetWatchVoiceTests" */;
+			buildPhases = (
+				B55EBA48214D7CF5EBBC76DE /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CAB39F33C6531E8E608DA268 /* PBXTargetDependency */,
+			);
+			name = SupersetWatchVoiceTests;
+			packageProductDependencies = (
+			);
+			productName = SupersetWatchVoiceTests;
+			productReference = A599F8581330608DA29BDEAA /* SupersetWatchVoiceTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		12F0EA4170DEAAA654B98F69 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 0293C96FCC7D6961A972AFFA /* Build configuration list for PBXProject "SupersetWatchVoice" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = F593F73E7B1619BA2B6E3ACA;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 0315C749BC20AE2AEB5ABC2D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2D716FD8FFB014FCE7B2AD33 /* SupersetWatchVoice */,
+				52D50D7FBDEA52F424461E10 /* SupersetWatchVoiceTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		59107C18D08EA5150772A9EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBD43BB3875C2684E37E7AC1 /* SupersetWatchVoiceApp.swift in Sources */,
+				4141470CCA448D03ADCECF65 /* VoiceModels.swift in Sources */,
+				F16FA3E269E0F570A5F7C965 /* VoiceSessionModel.swift in Sources */,
+				1503856527453F324D19D652 /* VoiceView.swift in Sources */,
+				E1D21A1E2C0AA4500BFE8983 /* WatchAudioRecorder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B55EBA48214D7CF5EBBC76DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28084234CC008196215C179D /* ReceiptLedgerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CAB39F33C6531E8E608DA268 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2D716FD8FFB014FCE7B2AD33 /* SupersetWatchVoice */;
+			targetProxy = E0AE0484BB309C5B516E4406 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3FC75428589F8DCA817B81A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		7906F5F36A418876C4646AF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.superset.SupersetWatchVoiceTests;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SupersetWatchVoice.app/SupersetWatchVoice";
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		9079075BA2454D00CEC3102B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B1EA22FCCFD6185C62DEA6A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.superset.SupersetWatchVoiceTests;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SupersetWatchVoice.app/SupersetWatchVoice";
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		D0C67FA5228D425244DAFCEB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Superset needs microphone access for push-to-talk voice turns.";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.superset.watchvoice;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		FBC67E2EF66023AF1D43A729 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Superset needs microphone access for push-to-talk voice turns.";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.superset.watchvoice;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0293C96FCC7D6961A972AFFA /* Build configuration list for PBXProject "SupersetWatchVoice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9079075BA2454D00CEC3102B /* Debug */,
+				3FC75428589F8DCA817B81A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		15A6A5C7F00100E61443852E /* Build configuration list for PBXNativeTarget "SupersetWatchVoiceTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7906F5F36A418876C4646AF5 /* Debug */,
+				B1EA22FCCFD6185C62DEA6A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3658037CAB4D1637EDD65DCF /* Build configuration list for PBXNativeTarget "SupersetWatchVoice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FBC67E2EF66023AF1D43A729 /* Debug */,
+				D0C67FA5228D425244DAFCEB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 12F0EA4170DEAAA654B98F69 /* Project object */;
+}

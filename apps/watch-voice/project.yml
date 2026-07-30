@@ -1,0 +1,28 @@
+name: SupersetWatchVoice
+options:
+  bundleIdPrefix: com.superset
+targets:
+  SupersetWatchVoice:
+    type: application
+    platform: watchOS
+    deploymentTarget: "11.0"
+    sources: [SupersetWatchVoice]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.superset.watchvoice
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_WKApplication: YES
+        INFOPLIST_KEY_WKWatchOnly: YES
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: Superset needs microphone access for push-to-talk voice turns.
+        TARGETED_DEVICE_FAMILY: 4
+        SWIFT_VERSION: 6.0
+  SupersetWatchVoiceTests:
+    type: bundle.unit-test
+    platform: watchOS
+    deploymentTarget: "11.0"
+    sources: [SupersetWatchVoiceTests]
+    dependencies: [{target: SupersetWatchVoice}]
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: 6.0
