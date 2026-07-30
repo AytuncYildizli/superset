@@ -16,16 +16,9 @@ struct VoiceReply: Sendable { let text: String }
 enum VoiceGatewayEvent: Sendable { case dispatched, accepted, working, final(VoiceReply) }
 protocol VoiceGateway: Sendable { func submit(turnID: UUID, audioURL: URL) async throws -> AsyncStream<VoiceGatewayEvent> }
 
-struct MockVoiceGateway: VoiceGateway {
+struct UnavailableVoiceGateway: VoiceGateway {
     func submit(turnID: UUID, audioURL: URL) async throws -> AsyncStream<VoiceGatewayEvent> {
-        AsyncStream { continuation in
-            Task {
-                continuation.yield(.dispatched); try? await Task.sleep(for: .milliseconds(220))
-                continuation.yield(.accepted); try? await Task.sleep(for: .milliseconds(280))
-                continuation.yield(.working); try? await Task.sleep(for: .milliseconds(450))
-                continuation.yield(.final(VoiceReply(text: "Watch voice turn delivered.")))
-                continuation.finish()
-            }
-        }
+        throw GatewayUnavailable.missingConfiguration
     }
+    enum GatewayUnavailable: Error { case missingConfiguration }
 }

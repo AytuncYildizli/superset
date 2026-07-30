@@ -6,14 +6,22 @@ targets:
     type: application
     platform: watchOS
     deploymentTarget: "11.0"
-    sources: [SupersetWatchVoice]
+    info:
+      path: SupersetWatchVoice/Info.plist
+      properties:
+        WKApplication: true
+        WKWatchOnly: true
+        NSMicrophoneUsageDescription: Superset needs microphone access for push-to-talk voice turns.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        WatchVoiceBaseURL: http://127.0.0.1:18787
+    sources:
+      - path: SupersetWatchVoice
+      - path: Resources
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.superset.watchvoice
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_WKApplication: YES
-        INFOPLIST_KEY_WKWatchOnly: YES
-        INFOPLIST_KEY_NSMicrophoneUsageDescription: Superset needs microphone access for push-to-talk voice turns.
         TARGETED_DEVICE_FAMILY: 4
         SWIFT_VERSION: 6.0
   SupersetWatchVoiceTests:

@@ -7,9 +7,18 @@ final class VoiceSessionModel: ObservableObject {
     @Published private(set) var reply = "Hold to talk"
     @Published private(set) var ledger = ReceiptLedger()
     private let recorder = WatchAudioRecorder()
+    private let speaker = WatchSpeechSynthesizer()
     private let gateway: any VoiceGateway
     private var audioURL: URL?
-    init(gateway: any VoiceGateway = MockVoiceGateway()) { self.gateway = gateway }
+    init() {
+        if let configuration = try? WatchVoiceConfiguration.load() {
+            gateway = HTTPSVoiceGateway(configuration: configuration)
+        } else {
+            gateway = UnavailableVoiceGateway()
+        }
+    }
+
+    init(gateway: any VoiceGateway) { self.gateway = gateway }
     func startListening() {
         guard phase == .idle || phase == .delivered || phase == .failed else { return }
         ledger = ReceiptLedger(); reply = "Listening…"; phase = .listening
@@ -27,7 +36,7 @@ final class VoiceSessionModel: ObservableObject {
                 case .dispatched: ledger.mark(.dispatch)
                 case .accepted: ledger.mark(.accept); phase = .accepted; reply = "Accepted"
                 case .working: ledger.mark(.work); phase = .working; reply = "Thinking…"
-                case .final(let response): ledger.mark(.deliver); phase = .delivered; reply = response.text
+                case .final(let response): ledger.mark(.deliver); phase = .delivered; reply = response.text; speaker.speak(response.text)
                 }
             }
         } catch { phase = .failed; reply = "Turn failed — tap to retry" }

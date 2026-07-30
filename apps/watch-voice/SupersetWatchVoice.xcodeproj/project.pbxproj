@@ -9,7 +9,11 @@
 /* Begin PBXBuildFile section */
 		1503856527453F324D19D652 /* VoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5C33632783828295D3EFC5 /* VoiceView.swift */; };
 		28084234CC008196215C179D /* ReceiptLedgerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EF16374E1EAA684AE06BAB /* ReceiptLedgerTests.swift */; };
+		3A249FE6A779A6CD788C2549 /* HTTPSVoiceGateway.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF87CE2DCAC432A23A2172F /* HTTPSVoiceGateway.swift */; };
 		4141470CCA448D03ADCECF65 /* VoiceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636F0374924A102A2877220A /* VoiceModels.swift */; };
+		849C1A9933C904C654D65E43 /* watch-voice-canary.m4a in Resources */ = {isa = PBXBuildFile; fileRef = B0F1BDB219E91695383B9DB7 /* watch-voice-canary.m4a */; };
+		BA3B526D329CC1EB9FD8AAA3 /* WatchSpeechSynthesizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F6D3CC9338AFEBF1FBB8F6 /* WatchSpeechSynthesizer.swift */; };
+		C003F6FEC75A08ECD820F98A /* WatchVoiceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A670FC0A005954DE393EF0 /* WatchVoiceConfiguration.swift */; };
 		E1D21A1E2C0AA4500BFE8983 /* WatchAudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A938FAF82BFC125D3E83D893 /* WatchAudioRecorder.swift */; };
 		EBD43BB3875C2684E37E7AC1 /* SupersetWatchVoiceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBD04BAB8F7765D469AB03 /* SupersetWatchVoiceApp.swift */; };
 		F16FA3E269E0F570A5F7C965 /* VoiceSessionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC56D93EAB558E5BF60DCA1F /* VoiceSessionModel.swift */; };
@@ -26,17 +30,30 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4FF87CE2DCAC432A23A2172F /* HTTPSVoiceGateway.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPSVoiceGateway.swift; sourceTree = "<group>"; };
 		636F0374924A102A2877220A /* VoiceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceModels.swift; sourceTree = "<group>"; };
+		7E338C19B018CCBE0618EC72 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A1F6D3CC9338AFEBF1FBB8F6 /* WatchSpeechSynthesizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSpeechSynthesizer.swift; sourceTree = "<group>"; };
 		A599F8581330608DA29BDEAA /* SupersetWatchVoiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SupersetWatchVoiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5BFCC44502B662052411B04 /* SupersetWatchVoice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SupersetWatchVoice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A938FAF82BFC125D3E83D893 /* WatchAudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAudioRecorder.swift; sourceTree = "<group>"; };
+		B0F1BDB219E91695383B9DB7 /* watch-voice-canary.m4a */ = {isa = PBXFileReference; path = "watch-voice-canary.m4a"; sourceTree = "<group>"; };
 		CD5C33632783828295D3EFC5 /* VoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceView.swift; sourceTree = "<group>"; };
+		D1A670FC0A005954DE393EF0 /* WatchVoiceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchVoiceConfiguration.swift; sourceTree = "<group>"; };
 		D1EF16374E1EAA684AE06BAB /* ReceiptLedgerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptLedgerTests.swift; sourceTree = "<group>"; };
 		DBBBD04BAB8F7765D469AB03 /* SupersetWatchVoiceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupersetWatchVoiceApp.swift; sourceTree = "<group>"; };
 		EC56D93EAB558E5BF60DCA1F /* VoiceSessionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceSessionModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		00EF0EA9BFB08D1022935B11 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B0F1BDB219E91695383B9DB7 /* watch-voice-canary.m4a */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		0315C749BC20AE2AEB5ABC2D /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -49,11 +66,15 @@
 		15CA1FE7D6306D0690E01E39 /* SupersetWatchVoice */ = {
 			isa = PBXGroup;
 			children = (
+				4FF87CE2DCAC432A23A2172F /* HTTPSVoiceGateway.swift */,
+				7E338C19B018CCBE0618EC72 /* Info.plist */,
 				DBBBD04BAB8F7765D469AB03 /* SupersetWatchVoiceApp.swift */,
 				636F0374924A102A2877220A /* VoiceModels.swift */,
 				EC56D93EAB558E5BF60DCA1F /* VoiceSessionModel.swift */,
 				CD5C33632783828295D3EFC5 /* VoiceView.swift */,
 				A938FAF82BFC125D3E83D893 /* WatchAudioRecorder.swift */,
+				A1F6D3CC9338AFEBF1FBB8F6 /* WatchSpeechSynthesizer.swift */,
+				D1A670FC0A005954DE393EF0 /* WatchVoiceConfiguration.swift */,
 			);
 			path = SupersetWatchVoice;
 			sourceTree = "<group>";
@@ -69,6 +90,7 @@
 		F593F73E7B1619BA2B6E3ACA = {
 			isa = PBXGroup;
 			children = (
+				00EF0EA9BFB08D1022935B11 /* Resources */,
 				15CA1FE7D6306D0690E01E39 /* SupersetWatchVoice */,
 				9CD2301873F0F05ABC43E606 /* SupersetWatchVoiceTests */,
 				0315C749BC20AE2AEB5ABC2D /* Products */,
@@ -83,6 +105,7 @@
 			buildConfigurationList = 3658037CAB4D1637EDD65DCF /* Build configuration list for PBXNativeTarget "SupersetWatchVoice" */;
 			buildPhases = (
 				59107C18D08EA5150772A9EF /* Sources */,
+				41E5B7521E0E4D1048EB1A61 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -144,16 +167,30 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		41E5B7521E0E4D1048EB1A61 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				849C1A9933C904C654D65E43 /* watch-voice-canary.m4a in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		59107C18D08EA5150772A9EF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A249FE6A779A6CD788C2549 /* HTTPSVoiceGateway.swift in Sources */,
 				EBD43BB3875C2684E37E7AC1 /* SupersetWatchVoiceApp.swift in Sources */,
 				4141470CCA448D03ADCECF65 /* VoiceModels.swift in Sources */,
 				F16FA3E269E0F570A5F7C965 /* VoiceSessionModel.swift in Sources */,
 				1503856527453F324D19D652 /* VoiceView.swift in Sources */,
 				E1D21A1E2C0AA4500BFE8983 /* WatchAudioRecorder.swift in Sources */,
+				BA3B526D329CC1EB9FD8AAA3 /* WatchSpeechSynthesizer.swift in Sources */,
+				C003F6FEC75A08ECD820F98A /* WatchVoiceConfiguration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,10 +374,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Superset needs microphone access for push-to-talk voice turns.";
-				INFOPLIST_KEY_WKApplication = YES;
-				INFOPLIST_KEY_WKWatchOnly = YES;
+				INFOPLIST_FILE = SupersetWatchVoice/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.superset.watchvoice;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -354,10 +388,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Superset needs microphone access for push-to-talk voice turns.";
-				INFOPLIST_KEY_WKApplication = YES;
-				INFOPLIST_KEY_WKWatchOnly = YES;
+				INFOPLIST_FILE = SupersetWatchVoice/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.superset.watchvoice;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
