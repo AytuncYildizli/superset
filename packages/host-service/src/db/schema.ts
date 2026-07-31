@@ -65,6 +65,39 @@ export const terminalAgentBindings = sqliteTable(
 	],
 );
 
+/**
+ * Last-known state of an agent binding, captured just before the binding is
+ * deleted on exit. This is what makes "restart the dead session with its prior
+ * context" possible: `agentSessionId` and `launchCommand` are unrecoverable
+ * once the binding row is gone.
+ *
+ * Deliberately has NO reference to `terminalSessions`. `terminalAgentBindings`
+ * is a cascade FK on that table, so a tombstone stored there would be deleted
+ * by SQLite along with the terminal it describes. `terminalId` below is plain
+ * historical text, not a foreign key.
+ */
+export const terminalAgentTombstones = sqliteTable(
+	"terminal_agent_tombstones",
+	{
+		id: text().primaryKey(),
+		workspaceId: text("workspace_id").notNull(),
+		terminalId: text("terminal_id").notNull(),
+		agentId: text("agent_id").notNull().$type<AgentIdentityId>(),
+		agentSessionId: text("agent_session_id"),
+		definitionId: text("definition_id").$type<AgentDefinitionId>(),
+		presetId: text("preset_id"),
+		label: text(),
+		launchCommand: text("launch_command"),
+		runtime: text().notNull(),
+		startedAt: integer("started_at").notNull(),
+		exitedAt: integer("exited_at").notNull(),
+	},
+	(table) => [
+		index("terminal_agent_tombstones_workspace_idx").on(table.workspaceId),
+		index("terminal_agent_tombstones_exited_at_idx").on(table.exitedAt),
+	],
+);
+
 export const projects = sqliteTable(
 	"projects",
 	{
