@@ -4,8 +4,11 @@ import {
 	setServerToolCallEmitter,
 } from "../define-tool";
 
+import * as agentsAwaitResume from "./agents/await-resume";
 import * as agentsCreate from "./agents/create";
 import * as agentsList from "./agents/list";
+import * as agentsListResumable from "./agents/list-resumable";
+import * as agentsResume from "./agents/resume";
 import * as automationsCreate from "./automations/create";
 import * as automationsDelete from "./automations/delete";
 import * as automationsGet from "./automations/get";
@@ -64,6 +67,9 @@ const REGISTRARS = [
 	workspacesDelete,
 	agentsCreate,
 	agentsList,
+	agentsListResumable,
+	agentsResume,
+	agentsAwaitResume,
 	terminalsCreate,
 	terminalsList,
 	terminalsSend,
