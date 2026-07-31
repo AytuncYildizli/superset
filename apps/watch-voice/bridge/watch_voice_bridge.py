@@ -2,7 +2,7 @@
 """Local Superset Watch voice bridge.
 
 POST audio/mp4 to /v1/watch/turns with a scoped bearer token. The bridge uses
-Hermes' configured STT, proves Superset dispatch/accept with RelayProof, invokes
+Hermes' configured STT, proves Superset dispatch/accept with Yapitalism, invokes
 a bounded Hermes one-shot, and returns the five-leg receipt envelope.
 """
 from __future__ import annotations
@@ -20,17 +20,45 @@ import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-RELAYPROOF_SRC = Path(os.getenv("RELAYPROOF_SRC", "/Users/aytuncyildizli/hermes-workspace/projects/relayproof/src"))
+
+def _env_override(new_name: str, legacy_name: str) -> str | None:
+    """Prefer the yapitalism-era variable, honour the relayproof-era one."""
+    return os.getenv(new_name) or os.getenv(legacy_name)
+
+
+_CACHE_DIR = Path.home() / ".cache/superset-watch-voice"
+_MANIFEST_DEFAULT = _CACHE_DIR / "yapitalism-manifest.json"
+_MANIFEST_LEGACY = _CACHE_DIR / "relayproof-manifest.json"
+
+# The checkout directory is still named `relayproof` (the Git repository has not
+# been renamed); only the Python package inside it became `yapitalism`.
+_SRC_OVERRIDE = _env_override("YAPITALISM_SRC", "RELAYPROOF_SRC")
+YAPITALISM_SRC = Path(
+    _SRC_OVERRIDE or "/Users/aytuncyildizli/hermes-workspace/projects/relayproof/src"
+)
 HERMES_REPO = Path(os.getenv("HERMES_REPO", "/Users/aytuncyildizli/.hermes/hermes-agent"))
 HERMES_PYTHON = Path(os.getenv("HERMES_PYTHON", str(HERMES_REPO / "venv/bin/python")))
 HERMES_BIN = os.getenv("HERMES_BIN", "hermes")
-MANIFEST = Path(os.getenv("RELAYPROOF_MANIFEST", str(Path.home() / ".cache/superset-watch-voice/relayproof-manifest.json")))
+
+_MANIFEST_OVERRIDE = _env_override("YAPITALISM_MANIFEST", "RELAYPROOF_MANIFEST")
+if _MANIFEST_OVERRIDE:
+    MANIFEST = Path(_MANIFEST_OVERRIDE)
+elif _MANIFEST_DEFAULT.exists():
+    MANIFEST = _MANIFEST_DEFAULT
+else:
+    # A manifest provisioned before the rebrand is still valid and still 0600.
+    # Falling back to it keeps an existing install working; an explicit override
+    # is never second-guessed.
+    MANIFEST = (
+        _MANIFEST_LEGACY if _MANIFEST_LEGACY.exists() else _MANIFEST_DEFAULT
+    )
+
 MAX_AUDIO_BYTES = 8 * 1024 * 1024
 STATE_DB = Path(os.getenv("WATCH_VOICE_STATE_DB", str(Path.home() / ".cache/superset-watch-voice/bridge.sqlite3")))
 TURN_TTL_SECONDS = 24 * 60 * 60
 
-sys.path.insert(0, str(RELAYPROOF_SRC))
-from relayproof.adapters.superset import SupersetAdapter, SupersetConfig  # noqa: E402
+sys.path.insert(0, str(YAPITALISM_SRC))
+from yapitalism.adapters.superset import SupersetAdapter, SupersetConfig  # noqa: E402
 
 
 def transcribe(audio_path: Path) -> str:
@@ -59,8 +87,11 @@ def prove_superset(turn_id: uuid.UUID) -> None:
     adapter = SupersetAdapter(SupersetConfig.from_manifest(MANIFEST))
     baseline = adapter.snapshot(max_lines=1000)
     marker_hex = uuid.uuid4().hex.upper()
-    marker = "RELAYPROOF_ACK_" + marker_hex
-    command = "printf 'RELAYPROOF_ACK_%s%s\\n' '" + marker_hex[:16] + "' '" + marker_hex[16:] + "'"
+    # Must match _validate_canary in yapitalism.adapters.superset exactly, or the
+    # adapter rejects the canary before dispatch. The prefix is split across the
+    # printf arguments so the literal marker never appears in the submitted text.
+    marker = "YAPITALISM_ACK_" + marker_hex
+    command = "printf 'YAPITALISM_ACK_%s%s\\n' '" + marker_hex[:16] + "' '" + marker_hex[16:] + "'"
     token = f"watch-{turn_id.hex}"
     dispatched = adapter.dispatch(command, expected_revision=baseline.revision, client_token=token, confirm=True)
     if not dispatched.dispatched:

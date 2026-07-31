@@ -2,7 +2,7 @@
 """Bootstrap an isolated Superset workspace/terminal for Watch voice.
 
 Reads the running local host-service token from its own-user process environment,
-never prints it, and writes a 0600 RelayProof manifest. Idempotent at project and
+never prints it, and writes a 0600 Yapitalism manifest. Idempotent at project and
 workspace layers; creates a terminal only when the workspace has no active one.
 """
 from __future__ import annotations
@@ -20,7 +20,7 @@ HOST = "http://127.0.0.1:48900"
 TRPC = HOST + "/trpc"
 REPO = Path("/Users/aytuncyildizli/hermes-workspace/research-intake/superset-voice-current-main")
 WORKTREE = Path("/Users/aytuncyildizli/hermes-workspace/research-intake/superset-watchos-voice-spike")
-MANIFEST = Path.home() / ".cache" / "superset-watch-voice" / "relayproof-manifest.json"
+MANIFEST = Path.home() / ".cache" / "superset-watch-voice" / "yapitalism-manifest.json"
 
 
 def host_environment() -> dict[str, str]:

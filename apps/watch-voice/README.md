@@ -7,7 +7,7 @@ Native SwiftUI watchOS push-to-talk client backed by a local authenticated voice
 1. Watch records AAC/16 kHz mono audio.
 2. `HTTPSVoiceGateway` posts `audio/mp4` to `/v1/watch/turns` with a scoped bearer token, UUID turn ID, and idempotency key.
 3. The local bridge uses Hermes' configured auto-language STT.
-4. RelayProof proves dispatch and acceptance in an isolated Superset terminal.
+4. Yapitalism proves dispatch and acceptance in an isolated Superset terminal.
 5. A bounded Hermes one-shot (`web` toolset only, no external side effects) returns concise text.
 6. Watch renders all five receipts and speaks the answer with `AVSpeechSynthesizer`.
 
