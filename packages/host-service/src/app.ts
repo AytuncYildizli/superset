@@ -28,6 +28,7 @@ import { PullRequestRuntimeManager } from "./runtime/pull-requests";
 import { runWorkspaceBackfill } from "./runtime/workspace-backfill";
 import { registerWorkspaceTerminalRoute } from "./terminal/terminal";
 import {
+	SqliteAgentTombstoneStore,
 	SqliteTerminalAgentBindingPersistence,
 	TerminalAgentStore,
 } from "./terminal-agents";
@@ -190,7 +191,24 @@ export function createApp(options: CreateAppOptions): CreateAppResult {
 			error,
 		);
 	}
-	const terminalAgentStore = new TerminalAgentStore(terminalAgentPersistence);
+	// Survives agent exit so a dead session can be restarted with its prior
+	// context. Bounded by TTL and per-workspace cap; pruning is hygiene only and
+	// must not block startup, same as the binding prune above.
+	const terminalAgentTombstones = new SqliteAgentTombstoneStore(db);
+	try {
+		const pruned = terminalAgentTombstones.prune(Date.now());
+		if (pruned > 0) {
+			console.log(
+				`[terminal-agents] pruned ${pruned} expired agent tombstone(s)`,
+			);
+		}
+	} catch (error) {
+		console.warn("[terminal-agents] failed to prune agent tombstones", error);
+	}
+	const terminalAgentStore = new TerminalAgentStore(
+		terminalAgentPersistence,
+		terminalAgentTombstones,
+	);
 
 	// Startup sweeps run in the background so they don't block server
 	// startup. Ordering matters: the backfills fill identity fields on
