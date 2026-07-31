@@ -285,6 +285,7 @@ export function createApp(options: CreateAppOptions): CreateAppResult {
 					runtime,
 					eventBus,
 					terminalAgentStore,
+					terminalAgentTombstones,
 					organizationId: config.organizationId,
 					isAuthenticated,
 					clientMachineId:

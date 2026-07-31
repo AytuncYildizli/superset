@@ -12,6 +12,7 @@ import type {
 	TerminalAgentBinding,
 	TerminalAgentId,
 } from "../../../terminal-agents";
+import { toResumableAgentViews } from "../../../terminal-agents";
 import { protectedProcedure, router } from "../../index";
 
 type GetOrCreateResult = {
@@ -41,6 +42,19 @@ export const terminalAgentsRouter = router({
 	list: protectedProcedure.query(({ ctx }) => {
 		return ctx.terminalAgentStore.list();
 	}),
+
+	/**
+	 * Agents that have exited and may be restartable with their prior context.
+	 * Read-only: it never launches anything. `resumable` and `fidelity` describe
+	 * what a later resume could honestly claim.
+	 */
+	listResumable: protectedProcedure
+		.input(z.object({ workspaceId: z.string().min(1) }))
+		.query(({ ctx, input }) => {
+			return toResumableAgentViews(
+				ctx.terminalAgentTombstones.listByWorkspace(input.workspaceId),
+			);
+		}),
 
 	listByWorkspace: protectedProcedure
 		.input(

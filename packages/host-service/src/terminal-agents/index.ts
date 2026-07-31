@@ -3,6 +3,11 @@ export type { ResumePlan } from "./resume-argv";
 export { resumeArgvFor } from "./resume-argv";
 export type { ResumePhase } from "./resume-evidence";
 export { classifyResume, resumeSpeak } from "./resume-evidence";
+export type { ResumableAgentView } from "./resumable-view";
+export {
+	toResumableAgentView,
+	toResumableAgentViews,
+} from "./resumable-view";
 export type {
 	TerminalAgentBindingListFilter,
 	TerminalAgentBindingPersistence,

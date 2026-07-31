@@ -12,6 +12,12 @@ export interface TerminalOperatorAgent {
 	runtime: TerminalRuntime;
 	presetId?: string;
 	label?: string;
+	/**
+	 * The agent's own session id, when the runtime reported one. Required to
+	 * resume that exact conversation later; without it a resume can only ask the
+	 * runtime for its most recent session, which is a weaker claim.
+	 */
+	agentSessionId?: string;
 }
 
 export interface TerminalOperatorSession extends TerminalSessionSummary {
@@ -81,6 +87,9 @@ export function buildTerminalOperatorSession({
 			runtime: runtimeFromBinding(binding),
 			...(binding?.presetId ? { presetId: binding.presetId } : {}),
 			...(binding?.label ? { label: binding.label } : {}),
+			...(binding?.agentSessionId
+				? { agentSessionId: binding.agentSessionId }
+				: {}),
 		},
 		launchCommand: binding?.launchCommand ?? null,
 		state,
