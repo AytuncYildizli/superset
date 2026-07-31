@@ -4,15 +4,23 @@ import {
 } from "@superset/shared/agent-catalog";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
 import {
 	createTerminalSessionInternal,
 	disposeSessionAndWait,
+	snapshotSession,
 } from "../../../terminal/terminal";
 import type {
+	ResumePhase,
 	TerminalAgentBinding,
 	TerminalAgentId,
 } from "../../../terminal-agents";
-import { toResumableAgentViews } from "../../../terminal-agents";
+import {
+	classifyResume,
+	resumeArgvFor,
+	resumeSpeak,
+	toResumableAgentViews,
+} from "../../../terminal-agents";
 import { protectedProcedure, router } from "../../index";
 
 type GetOrCreateResult = {
@@ -54,6 +62,119 @@ export const terminalAgentsRouter = router({
 			return toResumableAgentViews(
 				ctx.terminalAgentTombstones.listByWorkspace(input.workspaceId),
 			);
+		}),
+
+	/**
+	 * Restart a dead agent with its prior context. Returns `phase: "launched"`
+	 * and nothing stronger: starting the process is not proof the conversation
+	 * was restored. The caller must follow with `awaitResume` for that.
+	 */
+	resume: protectedProcedure
+		.input(
+			z.object({
+				tombstoneId: z.string().min(1),
+				cwd: z.string().min(1).optional(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const row = ctx.terminalAgentTombstones.get(input.tombstoneId);
+			if (row === null) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No such resumable agent",
+				});
+			}
+			const plan = resumeArgvFor(row);
+			if (plan === null) {
+				throw new TRPCError({
+					code: "PRECONDITION_FAILED",
+					message: `Runtime ${row.runtime} cannot be resumed from the recorded state`,
+				});
+			}
+
+			const terminalId = randomUUID();
+			const created = await createTerminalSessionInternal({
+				terminalId,
+				workspaceId: row.workspaceId,
+				db: ctx.db,
+				eventBus: ctx.eventBus,
+				// argv is metacharacter-free by construction: binaries are literals
+				// and the session id is validated against [A-Za-z0-9._-] in
+				// resumeArgvFor, so joining cannot inject shell syntax.
+				initialCommand: plan.argv.join(" "),
+				...(input.cwd ? { cwd: input.cwd } : {}),
+			});
+			if ("error" in created) {
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: created.error,
+				});
+			}
+
+			return {
+				terminalId,
+				workspaceId: row.workspaceId,
+				runtime: row.runtime,
+				fidelity: plan.fidelity,
+				phase: "launched" as const,
+				speak:
+					"Ajanı yeniden başlattım; geçmişin yüklendiğini şimdi kontrol ediyorum.",
+			};
+		}),
+
+	/**
+	 * Poll the restarted terminal for evidence that context was restored. Only
+	 * `restored` is an unqualified success; every other phase speaks as SARI.
+	 */
+	awaitResume: protectedProcedure
+		.input(
+			z.object({
+				terminalId: z.string().min(1),
+				workspaceId: z.string().min(1),
+				fidelity: z.enum(["exact", "last"]),
+				timeoutMs: z.number().int().min(250).max(30_000).default(8_000),
+				pollIntervalMs: z.number().int().min(50).max(2_000).default(300),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			const started = performance.now();
+			const deadline = started + input.timeoutMs;
+			let attempts = 0;
+			let phase: ResumePhase = "unknown_timeout";
+
+			while (performance.now() < deadline) {
+				const snapshot = await snapshotSession({
+					terminalId: input.terminalId,
+					workspaceId: input.workspaceId,
+					maxLines: 200,
+					db: ctx.db,
+					eventBus: ctx.eventBus,
+				});
+				attempts += 1;
+				if ("error" in snapshot) {
+					// An unreadable terminal is unknown, never a success.
+					break;
+				}
+				phase = classifyResume({
+					paneText: snapshot.text,
+					fidelity: input.fidelity,
+					timedOut: false,
+				});
+				if (phase !== "unknown_timeout") break;
+				const remaining = deadline - performance.now();
+				if (remaining <= 0) break;
+				await new Promise((resolve) =>
+					setTimeout(resolve, Math.min(input.pollIntervalMs, remaining)),
+				);
+			}
+
+			return {
+				terminalId: input.terminalId,
+				phase,
+				attempts,
+				verified: phase === "restored",
+				speak: resumeSpeak(phase),
+			};
 		}),
 
 	listByWorkspace: protectedProcedure
