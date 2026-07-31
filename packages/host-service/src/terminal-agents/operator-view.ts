@@ -30,7 +30,7 @@ const WAITING_INPUT_EVENTS = new Set([
 ]);
 const IDLE_EVENTS = new Set(["Stop", "Attached", "SessionEnd", "idle"]);
 
-function runtimeFromBinding(
+export function runtimeFromBinding(
 	binding: TerminalAgentBinding | undefined,
 ): TerminalRuntime {
 	if (!binding) return "shell";

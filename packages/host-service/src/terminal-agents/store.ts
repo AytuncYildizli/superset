@@ -1,5 +1,8 @@
 import { EventEmitter } from "node:events";
 import type { AgentDefinitionId } from "@superset/shared/agent-catalog";
+// Type-only: erased at runtime, so this introduces no import cycle even though
+// tombstone-store reaches operator-view.
+import type { AgentTombstoneSink } from "./tombstone-store";
 import type { TerminalAgentBinding, TerminalAgentId } from "./types";
 
 interface RecordEventInput {
@@ -54,10 +57,15 @@ export interface TerminalAgentBindingPersistence {
 export class TerminalAgentStore extends EventEmitter {
 	private readonly byTerminal = new Map<string, TerminalAgentBinding>();
 	private readonly persistence: TerminalAgentBindingPersistence | undefined;
+	private readonly tombstones: AgentTombstoneSink | undefined;
 
-	constructor(persistence?: TerminalAgentBindingPersistence) {
+	constructor(
+		persistence?: TerminalAgentBindingPersistence,
+		tombstones?: AgentTombstoneSink,
+	) {
 		super();
 		this.persistence = persistence;
+		this.tombstones = tombstones;
 
 		for (const binding of persistence?.load() ?? []) {
 			this.byTerminal.set(binding.terminalId, binding);
@@ -206,6 +214,18 @@ export class TerminalAgentStore extends EventEmitter {
 	private deleteTerminal(terminalId: string): void {
 		const existing = this.byTerminal.get(terminalId);
 		if (!existing) return;
+		// Capture BEFORE deletion. agentSessionId and launchCommand live only on
+		// this binding, and the persisted row is a cascade FK to the terminal
+		// session, so both are unrecoverable once deletion begins. A failing sink
+		// must not block terminal teardown.
+		try {
+			this.tombstones?.recordExit(existing, Date.now());
+		} catch (error) {
+			console.warn(
+				"[terminal-agents] failed to record agent tombstone:",
+				error,
+			);
+		}
 		this.byTerminal.delete(terminalId);
 		this.persistence?.delete(terminalId);
 		this.emit("change", existing.workspaceId);
