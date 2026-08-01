@@ -2,20 +2,20 @@ import type { Metadata } from "next";
 import { YapitalismPage } from "./YapitalismPage";
 
 export const metadata: Metadata = {
-	title: "Yapitalism — Control coding agents by voice",
+	title: "Yapitalism | Control coding agents by voice",
 	description:
-		"Choose, launch, redirect, and monitor coding agents from the GPT or Codex Voice conversation you already use.",
+		"Start and steer coding agents from the GPT or Codex Voice conversation you already use.",
 	alternates: { canonical: "/yapitalism" },
 	openGraph: {
-		title: "Yapitalism — Say it. The agents move.",
+		title: "Yapitalism for GPT and Codex Voice",
 		description:
-			"One voice conversation becomes the command layer for your coding-agent fleet.",
+			"Start Codex, redirect Claude, and ask Kimi what changed without switching tabs.",
 		url: "/yapitalism",
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Yapitalism — Control coding agents by voice",
-		description: "One mic. Your whole coding-agent fleet.",
+		title: "Yapitalism for GPT and Codex Voice",
+		description: "Control live coding-agent sessions from one conversation.",
 	},
 };
 
