@@ -56,7 +56,7 @@ const LEGAL_LINKS: FooterLink[] = [
 
 export function Footer() {
 	const pathname = usePathname();
-	if (pathname === "/download") return null;
+	if (["/", "/download", "/yapitalism"].includes(pathname)) return null;
 
 	return (
 		<footer className="border-t border-border bg-background">

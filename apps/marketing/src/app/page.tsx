@@ -1,49 +1,28 @@
-import { COMPANY } from "@superset/shared/constants";
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
-import {
-	FAQPageJsonLd,
-	HomeWebPageJsonLd,
-	ServiceJsonLd,
-} from "@/components/JsonLd";
-import { FAQ_ITEMS } from "./components/FAQSection";
-import { HeroSection } from "./components/HeroSection";
-
-// Lazy load below-fold sections to reduce initial JS bundle (~304 KiB unused JS)
-const TrustedBySection = dynamic(() =>
-	import("./components/TrustedBySection").then((mod) => mod.TrustedBySection),
-);
-const FeaturesSection = dynamic(() =>
-	import("./components/FeaturesSection").then((mod) => mod.FeaturesSection),
-);
-const WallOfLoveSection = dynamic(() =>
-	import("./components/WallOfLoveSection").then((mod) => mod.WallOfLoveSection),
-);
-const FAQSection = dynamic(() =>
-	import("./components/FAQSection").then((mod) => mod.FAQSection),
-);
-const CTASection = dynamic(() =>
-	import("./components/CTASection").then((mod) => mod.CTASection),
-);
+import { YapitalismPage } from "./yapitalism/YapitalismPage";
 
 export const metadata: Metadata = {
-	alternates: {
-		canonical: COMPANY.MARKETING_URL,
+	title: { absolute: "Yapitalism | Control coding agents by voice" },
+	description:
+		"Start and steer Codex, Claude, Kimi, and the rest of your coding-agent fleet from GPT or Codex Voice.",
+	alternates: { canonical: "/" },
+	manifest: "/yapitalism/manifest.webmanifest",
+	icons: { icon: "/yapitalism-icon.svg" },
+	openGraph: {
+		title: "Yapitalism for GPT and Codex Voice",
+		description:
+			"Tell coding agents what to do, redirect them, and ask what changed without switching tabs.",
+		url: "/",
+		images: ["/yapitalism/opengraph-image"],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "Yapitalism for GPT and Codex Voice",
+		description: "Control live coding-agent sessions from one conversation.",
+		images: ["/yapitalism/opengraph-image"],
 	},
 };
 
 export default function Home() {
-	return (
-		<main className="flex flex-col bg-background">
-			<FAQPageJsonLd items={FAQ_ITEMS} />
-			<HomeWebPageJsonLd />
-			<ServiceJsonLd />
-			<HeroSection />
-			<TrustedBySection />
-			<FeaturesSection />
-			<WallOfLoveSection />
-			<FAQSection />
-			<CTASection />
-		</main>
-	);
+	return <YapitalismPage />;
 }

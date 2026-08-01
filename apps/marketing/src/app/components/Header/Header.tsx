@@ -14,7 +14,7 @@ interface HeaderProps {
 
 export function Header({ ctaButtons, starCounter }: HeaderProps) {
 	const pathname = usePathname();
-	if (pathname === "/download") return null;
+	if (["/", "/download", "/yapitalism"].includes(pathname)) return null;
 
 	return (
 		<header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">

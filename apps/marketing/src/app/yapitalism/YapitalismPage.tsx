@@ -39,6 +39,21 @@ const WAVEFORM = [
 export function YapitalismPage() {
 	return (
 		<main className={styles.yapitalism}>
+			<header className={styles.brandHeader}>
+				<Link aria-label="Yapitalism home" className={styles.wordmark} href="/">
+					<span aria-hidden="true" className={styles.wordmarkMark}>
+						Y
+					</span>
+					<span>Yapitalism</span>
+				</Link>
+				<nav aria-label="Yapitalism navigation" className={styles.brandNav}>
+					<a href="#product-demo">See it work</a>
+					<a href="#brand-stack">The stack</a>
+					<Link className={styles.navAction} href="/contact">
+						Private beta <ArrowRight aria-hidden="true" size={16} />
+					</Link>
+				</nav>
+			</header>
 			<section className={styles.hero}>
 				<div className={styles.heroCopy}>
 					<p className={styles.eyebrow}>Yapitalism for GPT and Codex Voice</p>
@@ -170,7 +185,7 @@ export function YapitalismPage() {
 				</article>
 			</section>
 
-			<section className={styles.conversionSection}>
+			<section className={styles.conversionSection} id="brand-stack">
 				<div>
 					<p className={styles.eyebrow}>Voice stays the interface</p>
 					<h2>Talk to one agent or the whole fleet.</h2>
@@ -192,6 +207,27 @@ export function YapitalismPage() {
 					</p>
 				</div>
 			</section>
+
+			<footer className={styles.brandFooter}>
+				<div>
+					<Link
+						aria-label="Yapitalism home"
+						className={styles.wordmark}
+						href="/"
+					>
+						<span aria-hidden="true" className={styles.wordmarkMark}>
+							Y
+						</span>
+						<span>Yapitalism</span>
+					</Link>
+					<p>Voice controls the agents. Superset runs the backend.</p>
+				</div>
+				<nav aria-label="Yapitalism footer navigation">
+					<Link href="/contact">Private beta</Link>
+					<a href="#product-demo">Product demo</a>
+					<Link href="/privacy">Privacy</Link>
+				</nav>
+			</footer>
 		</main>
 	);
 }
