@@ -50,6 +50,39 @@ describe("terminal delivery contract", () => {
 		expect(detectTerminalPromptStatus("$ echo risky", "shell")).toBe("unknown");
 	});
 
+	it("does not mistake an agent's placeholder suggestion for staged input", () => {
+		// Measured on a live idle pane: this hint sits inside an EMPTY Codex
+		// composer, survives a kill-line untouched, and treating it as text made
+		// the terminal permanently unwritable - send refused
+		// rejected_prompt_not_empty and clearing could not help, because there was
+		// nothing there to clear.
+		expect(
+			detectTerminalPromptStatus(
+				"output\n› Improve documentation in @filename\nfooter",
+				"codex",
+			),
+		).toBe("empty");
+		expect(
+			detectTerminalPromptStatus(
+				"› Use /skills to list available skills",
+				"codex",
+			),
+		).toBe("empty");
+		// Typing over the hint is real input again. Matching a prefix would have
+		// swallowed it.
+		expect(
+			detectTerminalPromptStatus(
+				"› Explain this codebase in one paragraph",
+				"codex",
+			),
+		).toBe("has_text");
+		// The table is per runtime: the same words in a Claude composer are not a
+		// Claude placeholder, and over-refusing is the safe direction.
+		expect(
+			detectTerminalPromptStatus("❯ Explain this codebase", "claude"),
+		).toBe("has_text");
+	});
+
 	it("requires a lifecycle event newer than injection for working/completed", () => {
 		const base = record();
 		expect(

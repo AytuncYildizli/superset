@@ -79,10 +79,56 @@ export function detectTerminalPromptStatus(
 	) {
 		const match = lines[index]?.match(promptPattern);
 		if (!match) continue;
-		return match[1]?.trim() ? "has_text" : "empty";
+		const body = match[1]?.trim();
+		if (!body) return "empty";
+		// An agent's own placeholder suggestion is not staged input. Codex renders a
+		// rotating hint inside an EMPTY composer, and treating it as text made every
+		// such terminal permanently unwritable: `terminal.send` refused
+		// rejected_prompt_not_empty, and clearing the prompt could not help because
+		// there was nothing in it to clear.
+		//
+		// Measured 2026-08-05 on an idle pane showing "Improve documentation in
+		// @filename": the line survived a kill-line untouched, and a client that
+		// judged it empty delivered successfully with the agent echoing a canary.
+		if (isPlaceholderSuggestion(body, runtime)) return "empty";
+		return "has_text";
 	}
 	return "unknown";
 }
+
+/**
+ * Placeholder text a runtime draws inside an empty composer.
+ *
+ * Matched whole, case-insensitively, so a prompt that merely STARTS with one of
+ * these - somebody typing over the hint - is still `has_text`. Erring toward
+ * `has_text` is the safe direction: a false `empty` lets a write append to real
+ * staged input and submit the merge.
+ */
+function isPlaceholderSuggestion(
+	body: string,
+	runtime: TerminalRuntime,
+): boolean {
+	const placeholders = PROMPT_PLACEHOLDERS[runtime];
+	if (!placeholders) return false;
+	const lowered = body.toLowerCase();
+	return placeholders.some((placeholder) => placeholder === lowered);
+}
+
+const PROMPT_PLACEHOLDERS: Partial<Record<TerminalRuntime, string[]>> = {
+	codex: [
+		"use /skills to list available skills",
+		"explain this codebase",
+		// The @filename suggestions rotate; the token is literal on screen.
+		"improve documentation in @filename",
+		"find and fix a bug in @filename",
+		"write tests for @filename",
+	],
+	// Empty because nothing has been observed, not because these draw none. An
+	// unobserved hint reads as `has_text` and over-refuses, which is the direction
+	// that cannot corrupt anybody's text.
+	claude: [],
+	kimi: [],
+};
 
 export function hashTerminalPrompt(text: string): string {
 	return createHash("sha256").update(text.trim()).digest("hex");
