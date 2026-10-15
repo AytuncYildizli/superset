@@ -48,11 +48,27 @@ test("security lockfile: every Next and sharp resolution meets the patch floor",
 });
 
 test("email preview resolves the patched Next runtime", () => {
-	const email = createRequire(new URL("packages/email/package.json", root));
-	const preview = createRequire(email.resolve("@react-email/preview-server"));
-	expect(preview("next/package.json").version).toBe("16.4.1");
-	// Load the actual server entry, not only its manifest.
-	expect(typeof preview("next")).toBe("function");
+	// Next installs a process-global require hook. Under Bun 1.3.11 it changes
+	// later createRequire lookups, so inspect its server in its own process.
+	const probe = Bun.spawnSync(
+		[
+			process.execPath,
+			"-e",
+			`const {createRequire} = require("node:module");
+		const preview = createRequire(require.resolve("@react-email/preview-server"));
+		console.log(JSON.stringify({version: preview("next/package.json").version, entry: typeof preview("next")}));`,
+		],
+		{
+			cwd: new URL("packages/email/", root).pathname,
+			env: { PATH: process.env.PATH ?? "", NEXT_TELEMETRY_DISABLED: "1" },
+			timeout: 10_000,
+		},
+	);
+	expect(probe.exitCode, new TextDecoder().decode(probe.stderr)).toBe(0);
+	expect(JSON.parse(new TextDecoder().decode(probe.stdout))).toEqual({
+		version: "16.4.1",
+		entry: "function",
+	});
 });
 
 test("patched sharp runs native resize and PNG/JPEG/WebP codecs", async () => {
