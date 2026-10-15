@@ -23,10 +23,11 @@
 		"fumadocs-mdx": "14.2.5",
 		"fumadocs-ui": "16.4.7",
 		"lucide-react": "^0.563.0",
-		"next": "^16.0.10",
+		"next": "16.4.1",
 		"posthog-js": "1.310.1",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
+		"sharp": "^0.35.5",
 		"tailwind-merge": "^3.4.0",
 		"zod": "^4.3.5"
 	},
