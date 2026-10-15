@@ -79,6 +79,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen --ignore-scripts
 
+      - name: Verify nested security resolutions and native codecs
+        run: bun test scripts/security-dependencies.test.ts
+
       - name: Install desktop native dependencies
         working-directory: apps/desktop
         run: bun run install:deps

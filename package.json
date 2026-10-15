@@ -46,7 +46,9 @@
 		"tooling/*"
 	],
 	"overrides": {
-		"axios": "1.14.0"
+		"axios": "1.14.0",
+		"next": "16.4.1",
+		"sharp": "0.35.5"
 	},
 	"patchedDependencies": {
 		"@durable-streams/state@0.2.1": "patches/@durable-streams%2Fstate@0.2.1.patch"
